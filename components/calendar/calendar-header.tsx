@@ -25,7 +25,7 @@ export function CalendarHeader({ onExportPDF }: { onExportPDF: () => void }) {
             <Compass className="h-5 w-5 text-primary-foreground" />
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-bold tracking-tight">Unidade Crux</span>
+            <span className="text-lg font-bold tracking-tight">Unidade Sirius</span>
             <span className="text-xs text-muted-foreground">Calendário 2026</span>
           </div>
         </div>

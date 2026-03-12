@@ -120,7 +120,7 @@ export default function CalendarPage() {
             Calendário <span className="text-primary">2026</span>
           </h1>
           <p className="mx-auto max-w-2xl text-muted-foreground">
-            Acompanhe todas as atividades da Unidade Crux. Acampamentos,
+            Acompanhe todas as atividades da Unidade Sirius. Acampamentos,
             reuniões, eventos especiais e muito mais.
           </p>
         </section>
@@ -227,7 +227,7 @@ export default function CalendarPage() {
         {/* Footer */}
         <footer className="mt-12 border-t border-border pt-8 text-center text-sm text-muted-foreground">
           <p>
-            Unidade Crux • Calendário de Atividades {year}
+            Unidade Sirius • Calendário de Atividades {year}
           </p>
           <p className="mt-1">
             Sincronize com seu calendário favorito clicando em qualquer evento
