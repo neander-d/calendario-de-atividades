@@ -22,59 +22,184 @@ import jsPDF from "jspdf"
 const allCategories = Object.keys(categoryConfig) as EventCategory[]
 
 export default function CalendarPage() {
+
   const [selectedCategories, setSelectedCategories] =
     useState<EventCategory[]>(allCategories)
-    const handleExportPDF = () => {
-  const doc = new jsPDF()
 
-  const filteredEvents = events2026
-    .filter((event) => selectedCategories.includes(event.category))
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
 
-  doc.setFontSize(18)
-  doc.text("Calendário 2026 - Unidade Crux", 105, 15, { align: "center" })
-
-  let y = 30
-  let currentMonth = ""
-
-  filteredEvents.forEach((event) => {
-    const date = new Date(event.date + "T00:00:00")
-
-    const monthName = date.toLocaleDateString("pt-BR", { month: "long" })
-    const formattedDate = date.toLocaleDateString("pt-BR")
-
-    if (monthName !== currentMonth) {
-      currentMonth = monthName
-
-      doc.setFont("helvetica", "bold")
-      doc.setFontSize(14)
-      doc.text(monthName.toUpperCase(), 10, y)
-
-      y += 8
-    }
-
-    doc.setFont("helvetica", "normal")
-    doc.setFontSize(11)
-
-    doc.text(`${formattedDate} • ${event.title}`, 12, y)
-
-    y += 6
-
-    if (y > 280) {
-      doc.addPage()
-      y = 20
-    }
-  })
-
-  doc.save("calendario-2026.pdf")
-}
-
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
 
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+
   const [visibleMonthStart, setVisibleMonthStart] = useState(0)
 
   const year = 2026
+
+  const handleExportPDF = () => {
+
+    const filteredEvents = events2026
+      .filter((event) => selectedCategories.includes(event.category))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+
+    const groupedByMonth = new Map<number, typeof filteredEvents>()
+
+    filteredEvents.forEach((event) => {
+      const month = new Date(event.date + "T00:00:00").getMonth()
+      if (!groupedByMonth.has(month)) {
+        groupedByMonth.set(month, [])
+      }
+      groupedByMonth.get(month)!.push(event)
+    })
+
+
+    const months = [
+      "Janeiro", "Fevereiro", "Marco", "Abril", "Maio", "Junho",
+      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    ]
+
+    const categoryLabels: Record<string, string> = {
+      "acampamento": "Acampamento",
+      "reuniao": "Reuniao",
+      "evento-especial": "Evento Especial",
+      "especialidade": "Especialidade",
+      "comunitario": "Comunitario",
+      "aniversario": "Aniversario"
+    }
+
+    const formatDate = (dateStr: string) => {
+      const date = new Date(dateStr + "T00:00:00")
+      return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()}`
+    }
+
+    const printWindow = window.open("", "_blank")
+    if (!printWindow) return
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Calendario Desbravadores ${currentYear}</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 40px;
+            color: #1a1a1a;
+            line-height: 1.5;
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #2d7a3e;
+          }
+          .header h1 {
+            font-size: 28px;
+            color: #2d7a3e;
+            margin-bottom: 8px;
+          }
+          .header p {
+            font-size: 16px;
+            color: #666;
+          }
+          .month-section {
+            margin-bottom: 30px;
+            break-inside: avoid;
+          }
+          .month-title {
+            font-size: 20px;
+            color: #2d7a3e;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e0e0e0;
+          }
+          .event {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-left: 4px solid #2d7a3e;
+            border-radius: 0 8px 8px 0;
+          }
+          .event-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 6px;
+          }
+          .event-details {
+            font-size: 12px;
+            color: #555;
+          }
+          .event-details span {
+            margin-right: 15px;
+          }
+          .category {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            background: #2d7a3e;
+            color: white;
+            margin-bottom: 6px;
+          }
+          .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+          }
+          @media print {
+            body { padding: 20px; }
+            .month-section { break-inside: avoid; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>Clube de Desbravadores</h1>
+          <p>Calendario de Atividades ${currentYear}</p>
+        </div>
+        ${Array.from(groupedByMonth.entries())
+          .sort((a, b) => a[0] - b[0])
+          .map(([month, monthEvents]) => `
+            <div class="month-section">
+              <h2 class="month-title">${months[month]}</h2>
+              ${monthEvents.map(event => `
+                <div class="event">
+                  <div class="category">${categoryLabels[event.category]}</div>
+                  <div class="event-title">${event.title}</div>
+                  <div class="event-details">
+                    <span><strong>Data:</strong> ${formatDate(event.date)}${event.endDate ? ` - ${formatDate(event.endDate)}` : ""}</span>
+                    ${event.time ? `<span><strong>Horario:</strong> ${event.time}</span>` : ""}
+                    ${event.location ? `<span><strong>Local:</strong> ${event.location}</span>` : ""}
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+          `).join("")}
+        <div class="footer">
+          <p>Documento gerado em ${new Date().toLocaleDateString("pt-BR")} | Clube de Desbravadores</p>
+        </div>
+      </body>
+      </html>
+    `
+
+    printWindow.document.write(htmlContent)
+    printWindow.document.close()
+    printWindow.onload = () => {
+      printWindow.print()
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <CalendarHeader onExportPDF={handleExportPDF} />
+    </div>
+  )
+
 
   const handleToggleCategory = useCallback((category: EventCategory) => {
     setSelectedCategories((prev) =>
@@ -122,6 +247,7 @@ export default function CalendarPage() {
           <p className="mx-auto max-w-2xl text-muted-foreground">
             Acompanhe todas as atividades da Unidade Sirius. Acampamentos,
             reuniões, eventos especiais e muito mais.
+            
           </p>
         </section>
 
