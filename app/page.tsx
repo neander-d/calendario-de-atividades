@@ -186,12 +186,6 @@ export default function CalendarPage() {
     }
   }
 
-  return (
-    <div className="min-h-screen bg-background">
-    <CalendarHeader onExportPDF={handleExportPDF} />
-    </div>
-  )
-
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [visibleMonthStart, setVisibleMonthStart] = useState(0)
