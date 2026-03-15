@@ -5,7 +5,7 @@ import {
   type EventCategory,
   categoryConfig,
 } from "@/lib/calendar-data"
-import { Tent, Users, Star, Heart, Home } from "lucide-react"
+import { Tent, Users, Star, Heart, Home, Medal } from "lucide-react"
 
 interface CalendarStatsProps {
   events: CalendarEvent[]
@@ -41,6 +41,12 @@ export function CalendarStats({ events }: CalendarStatsProps) {
       icon: Home,
       label: "Visitas",
       value: events.filter((e) => e.category === "Visitas").length,
+      color: "text-pink-500",
+    },
+         {
+      icon: Medal,
+      label: "Especialidades",
+      value: events.filter((e) => e.category === "especialidade").length,
       color: "text-purple-500",
     },
   ]

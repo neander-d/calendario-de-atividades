@@ -62,11 +62,11 @@ export default function CalendarPage() {
     const categoryColors: Record<string, string> = {
       acampamento: "#10B981",      // emerald
       reuniao: "#3B82F6",          // blue
-      especialidade: "#F59E0B",    // amber
+      "evento-especial": "#F59E0B",    // amber
       comunitario: "#F43F5E",      // rose
-      "evento-especial": "#A855F7", // purple
-      visita: "#06B6D4",
-      regular: "#64748B"
+      especialidade: "#A855F7", // purple
+      Visitas: "#EC4899", // pink
+     
     }
 
     const htmlContent = `
