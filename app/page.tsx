@@ -28,14 +28,6 @@ export default function CalendarPage() {
 
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
 
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
-
-  const [visibleMonthStart, setVisibleMonthStart] = useState(0)
-
-  const year = 2026
-
   const handleExportPDF = () => {
 
     const filteredEvents = events2026
@@ -196,10 +188,15 @@ export default function CalendarPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <CalendarHeader onExportPDF={handleExportPDF} />
+    <CalendarHeader onExportPDF={handleExportPDF} />
     </div>
   )
 
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+  const [visibleMonthStart, setVisibleMonthStart] = useState(0)
+
+  const year = 2026
 
   const handleToggleCategory = useCallback((category: EventCategory) => {
     setSelectedCategories((prev) =>
