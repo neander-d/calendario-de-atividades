@@ -59,6 +59,15 @@ export default function CalendarPage() {
 
     const printWindow = window.open("", "_blank")
     if (!printWindow) return
+    const categoryColors: Record<string, string> = {
+      acampamento: "#10B981",      // emerald
+      reuniao: "#3B82F6",          // blue
+      especialidade: "#F59E0B",    // amber
+      comunitario: "#F43F5E",      // rose
+      "evento-especial": "#A855F7", // purple
+      visita: "#06B6D4",
+      regular: "#64748B"
+    }
 
     const htmlContent = `
       <!DOCTYPE html>
@@ -154,7 +163,11 @@ export default function CalendarPage() {
               <h2 class="month-title">${months[month]}</h2>
               ${monthEvents.map(event => `
                 <div class="event">
-                  <div class="category">${categoryConfig[event.category]?.label}</div>
+                  <div 
+                     class="category" 
+                     style="background:${categoryColors[event.category]};">
+                      ${categoryConfig[event.category]?.label}
+                  </div>
                   <div class="event-title">${event.title}</div>
                   <div class="event-details">
                     <span><strong>Data:</strong> ${formatDate(event.date)}${event.endDate ? ` - ${formatDate(event.endDate)}` : ""}</span>
